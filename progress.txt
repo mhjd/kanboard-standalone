@@ -1,0 +1,2 @@
+# progress.txt — Ralph loop log
+2026-01-18: Bootstrapped Ralph loop metadata files (STATE.md, ARCHITECTURE.md, progress.txt, docs/adr/). Verification: `make archive` (ok).
