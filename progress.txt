@@ -5,3 +5,12 @@
 2026-01-18: Added round-trip import/export fixture test using ConfigModel and fixture DB. Verification: Fixture database created at /app/tests/fixtures/kanboard-minimal.db
 Fixture verification passed.
 Round-trip verification passed. (ok).
+2026-01-18: Added Makefile dev/test/build/fixtures/ci targets with docker-based test fallback and CI wiring. Verification: No formatter configured yet.
+phpunit not installed; running fixture round-trip tests instead.
+Fixture database created at /app/tests/fixtures/kanboard-minimal.db
+Fixture verification passed.
+Round-trip verification passed.
+Build archive: version=3cab673c4
+Fixture database created at /app/tests/fixtures/kanboard-minimal.db
+Fixture verification passed.
+Round-trip verification passed. (ok).

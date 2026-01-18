@@ -4,8 +4,8 @@ DOCKER_TAG := main
 PHP_IMAGE ?= php:8.2-cli
 VERSION := $(shell git rev-parse --short HEAD)
 
-.PHONY: archive fixtures test-sqlite test-mysql test-postgres sql \
-	docker-image docker-images docker-run docker-sh
+.PHONY: archive fixtures test test-sqlite test-mysql test-postgres sql \
+	build dev format lint ci docker-image docker-images docker-run docker-sh
 
 archive:
 	@ echo "Build archive: version=$(VERSION)"
@@ -17,6 +17,18 @@ fixtures:
 	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/verify_minimal_fixture.php
 	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/round_trip_minimal_fixture.php
 
+# Run unit/integration tests in a PHP container (SQLite config)
+# Falls back to fixture round-trip if phpunit is not installed.
+test:
+	@ if [ -x ./vendor/bin/phpunit ]; then \
+		$(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) ./vendor/bin/phpunit -c tests/units.sqlite.xml; \
+	else \
+		echo "phpunit not installed; running fixture round-trip tests instead."; \
+		$(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/create_minimal_fixture.php; \
+		$(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/verify_minimal_fixture.php; \
+		$(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/round_trip_minimal_fixture.php; \
+	fi
+
 test-sqlite:
 	@ ./vendor/bin/phpunit -c tests/units.sqlite.xml
 
@@ -25,6 +37,24 @@ test-mysql:
 
 test-postgres:
 	@ ./vendor/bin/phpunit -c tests/units.postgres.xml
+
+# Start a local Kanboard container (SQLite) for manual dev
+dev:
+	@ $(DOCKER) compose -f docker-compose.sqlite.yml up
+
+# Build a release archive artifact (placeholder for future binary packaging)
+build: archive
+
+# Run the formatter (placeholder until a formatter is configured)
+format:
+	@ echo "No formatter configured yet."
+
+# Run a basic syntax lint on a representative entrypoint
+lint:
+	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php -l index.php >/dev/null
+
+# CI: format + lint + test + build + fixtures
+ci: format lint test build fixtures
 
 sql:
 	@ pg_dump --schema-only --no-owner --no-privileges --quote-all-identifiers -n public --file app/Schema/Sql/postgres.sql kanboard
