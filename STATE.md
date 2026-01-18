@@ -4,5 +4,6 @@
 2. [x] Locate authoritative Kanboard import/export format and document sources.
 3. [x] Create a minimal Kanboard SQLite fixture with project, columns, tasks, colors, comments, and subtasks.
 4. [x] Add a round-trip test (import -> export) that preserves required entities.
-5. [ ] Decide approach (A/B/C) and record an ADR.
+5. [x] Decide approach (A/B/C) and record an ADR.
 6. [x] Add Makefile targets dev/test/build/fixtures/ci (documented with comments).
+7. [x] Validate fixture comment text and subtask status in verification scripts.

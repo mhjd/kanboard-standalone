@@ -102,9 +102,41 @@ if (count($uniqueCommentTasks) !== 2) {
     fail("Expected comments for two tasks, found: " . json_encode($uniqueCommentTasks));
 }
 
+$commentRows = $pdo->query(
+    "SELECT tasks.title AS task_title, comments.comment AS comment
+     FROM comments
+     JOIN tasks ON tasks.id = comments.task_id
+     ORDER BY comments.id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$expectedComments = [
+    ['task_title' => 'Fixture Task A', 'comment' => 'First fixture comment.'],
+    ['task_title' => 'Fixture Task B', 'comment' => 'Second fixture comment.'],
+];
+if ($commentRows !== $expectedComments) {
+    fail("Unexpected comment contents: " . json_encode($commentRows));
+}
+
 $subtaskTasks = $pdo->query("SELECT task_id FROM subtasks ORDER BY position ASC")->fetchAll(PDO::FETCH_COLUMN);
 if (count(array_unique($subtaskTasks)) !== 1) {
     fail("Expected subtasks on a single task, found: " . json_encode($subtaskTasks));
+}
+
+$subtaskRows = $pdo->query(
+    "SELECT tasks.title AS task_title, subtasks.title AS title, subtasks.status AS status
+     FROM subtasks
+     JOIN tasks ON tasks.id = subtasks.task_id
+     ORDER BY subtasks.position ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$subtaskRows = array_map(static function (array $row): array {
+    $row['status'] = (int) $row['status'];
+    return $row;
+}, $subtaskRows);
+$expectedSubtasks = [
+    ['task_title' => 'Fixture Task A', 'title' => 'Draft fixture checklist', 'status' => 0],
+    ['task_title' => 'Fixture Task A', 'title' => 'Verify fixture contents', 'status' => 1],
+];
+if ($subtaskRows !== $expectedSubtasks) {
+    fail("Unexpected subtask contents: " . json_encode($subtaskRows));
 }
 
 echo "Round-trip verification passed.\n";

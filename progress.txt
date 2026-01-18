@@ -14,3 +14,5 @@ Build archive: version=3cab673c4
 Fixture database created at /app/tests/fixtures/kanboard-minimal.db
 Fixture verification passed.
 Round-trip verification passed. (ok).
+2026-01-18: Chose approach C and recorded ADR 0001. Verification: `sudo make ci` (ok). (Initial `make ci` failed: docker permission denied.)
+2026-01-18: Added fixture comment/subtask content checks in verification scripts. Verification: `sudo make fixtures` (ok).
