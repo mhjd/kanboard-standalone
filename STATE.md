@@ -7,3 +7,4 @@
 5. [x] Decide approach (A/B/C) and record an ADR.
 6. [x] Add Makefile targets dev/test/build/fixtures/ci (documented with comments).
 7. [x] Validate fixture comment text and subtask status in verification scripts.
+8. [x] Add SQLite integrity_check to fixture verification.

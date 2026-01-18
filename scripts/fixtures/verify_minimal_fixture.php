@@ -14,6 +14,12 @@ $pdo = new PDO('sqlite:' . $fixturePath, null, null, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 ]);
 
+$integrityRows = $pdo->query('PRAGMA integrity_check')->fetchAll(PDO::FETCH_COLUMN);
+if ($integrityRows !== ['ok']) {
+    fwrite(STDERR, "SQLite integrity_check failed: " . json_encode($integrityRows) . "\n");
+    exit(1);
+}
+
 $checks = [
     'projects' => 1,
     'columns' => 3,
