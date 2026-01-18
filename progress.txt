@@ -2,3 +2,6 @@
 2026-01-18: Bootstrapped Ralph loop metadata files (STATE.md, ARCHITECTURE.md, progress.txt, docs/adr/). Verification: `make archive` (ok).
 2026-01-18: Documented Kanboard authoritative import/export format sources in docs/kanboard-data-format.md. Verification: `make archive` (ok).
 2026-01-18: Created minimal Kanboard SQLite fixture (project/columns/tasks/colors/comments/subtasks) and added fixtures scripts/Makefile target. Verification: `sudo make fixtures` (ok).
+2026-01-18: Added round-trip import/export fixture test using ConfigModel and fixture DB. Verification: Fixture database created at /app/tests/fixtures/kanboard-minimal.db
+Fixture verification passed.
+Round-trip verification passed. (ok).

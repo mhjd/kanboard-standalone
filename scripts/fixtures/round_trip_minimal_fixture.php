@@ -1,0 +1,110 @@
+<?php
+
+declare(strict_types=1);
+
+use Kanboard\Model\ConfigModel;
+use Pimple\Container;
+
+$root = dirname(__DIR__, 2);
+$fixturePath = $root . '/tests/fixtures/kanboard-minimal.db';
+
+function fail(string $message): void
+{
+    fwrite(STDERR, $message . "\n");
+    exit(1);
+}
+
+if (!file_exists($fixturePath)) {
+    fail("Fixture database not found: {$fixturePath}");
+}
+
+$workDir = sys_get_temp_dir() . '/kanboard-roundtrip-' . bin2hex(random_bytes(4));
+if (!mkdir($workDir, 0775, true) && !is_dir($workDir)) {
+    fail("Failed to create temp directory: {$workDir}");
+}
+
+$sourceDb = $workDir . '/db.sqlite';
+if (!copy($fixturePath, $sourceDb)) {
+    fail("Failed to copy fixture database to {$sourceDb}");
+}
+
+if (!defined('DB_FILENAME')) {
+    define('DB_FILENAME', $sourceDb);
+}
+
+require $root . '/vendor/autoload.php';
+
+class StubDb
+{
+    public function closeConnection(): void
+    {
+    }
+}
+
+$container = new Container();
+$container['db'] = new StubDb();
+
+$configModel = new ConfigModel($container);
+$gzData = $configModel->downloadDatabase();
+
+if ($gzData === false || $gzData === '') {
+    fail('Export failed: gz data was empty.');
+}
+
+$gzPath = $workDir . '/db.sqlite.gz';
+if (file_put_contents($gzPath, $gzData) === false) {
+    fail("Failed to write export archive: {$gzPath}");
+}
+
+if (! $configModel->uploadDatabase($gzPath)) {
+    fail('Import failed: unable to write decoded database.');
+}
+
+$pdo = new PDO('sqlite:' . $sourceDb, null, null, [
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+]);
+
+$checks = [
+    'projects' => 1,
+    'columns' => 3,
+    'tasks' => 2,
+    'comments' => 2,
+    'subtasks' => 2,
+    'swimlanes' => 1,
+];
+
+foreach ($checks as $table => $expected) {
+    $count = (int) $pdo->query("SELECT COUNT(*) FROM {$table}")->fetchColumn();
+    if ($count !== $expected) {
+        fail("Expected {$expected} rows in {$table}, found {$count}.");
+    }
+}
+
+$colors = $pdo->query("SELECT color_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
+if ($colors !== ['yellow', 'blue']) {
+    fail("Unexpected task colors: " . json_encode($colors));
+}
+
+$columnPositions = $pdo->query("SELECT title, position FROM columns ORDER BY position ASC")->fetchAll(PDO::FETCH_KEY_PAIR);
+$expectedColumns = [
+    'Backlog' => 1,
+    'In Progress' => 2,
+    'Done' => 3,
+];
+
+if ($columnPositions !== $expectedColumns) {
+    fail("Unexpected columns ordering: " . json_encode($columnPositions));
+}
+
+$commentTasks = $pdo->query("SELECT task_id FROM comments ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
+$uniqueCommentTasks = array_values(array_unique($commentTasks));
+if (count($uniqueCommentTasks) !== 2) {
+    fail("Expected comments for two tasks, found: " . json_encode($uniqueCommentTasks));
+}
+
+$subtaskTasks = $pdo->query("SELECT task_id FROM subtasks ORDER BY position ASC")->fetchAll(PDO::FETCH_COLUMN);
+if (count(array_unique($subtaskTasks)) !== 1) {
+    fail("Expected subtasks on a single task, found: " . json_encode($subtaskTasks));
+}
+
+echo "Round-trip verification passed.\n";

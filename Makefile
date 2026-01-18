@@ -15,6 +15,7 @@ archive:
 fixtures:
 	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/create_minimal_fixture.php
 	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/verify_minimal_fixture.php
+	@ $(DOCKER) run --rm -v "$(CURDIR)":/app -w /app $(PHP_IMAGE) php scripts/fixtures/round_trip_minimal_fixture.php
 
 test-sqlite:
 	@ ./vendor/bin/phpunit -c tests/units.sqlite.xml
