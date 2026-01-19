@@ -48,3 +48,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Added fixture task time_spent/time_estimated values and verification in fixture + round-trip scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture task date_completed values in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
 2026-01-19: Added fixture task score values and verification in fixture + round-trip scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).
+2026-01-19: Added fixture comment is_private field + verification in fixture/round-trip scripts. Verification: `make ci-docker` (docker permission denied); `sudo make ci-docker` (ok).

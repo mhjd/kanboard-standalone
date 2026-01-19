@@ -295,29 +295,39 @@ if ($tagTableInfo !== []) {
 
 $taskHasTagsInfo = tableInfo($pdo, 'task_has_tags');
 if ($taskHasTagsInfo !== [] && $tagId !== null) {
-    insertRow($pdo, 'task_has_tags', [
+insertRow($pdo, 'task_has_tags', [
         'task_id' => $taskAId,
         'tag_id' => $tagId,
     ]);
 }
 
-insertRow($pdo, 'comments', [
+$commentTableInfo = tableInfo($pdo, 'comments');
+
+$commentFirst = [
     'task_id' => $taskAId,
     'user_id' => $userId,
     'date_creation' => $fixtureTimestamp,
     'date_modification' => $fixtureTimestamp,
     'comment' => 'First fixture comment.',
     'reference' => '',
-]);
+];
+if (isset($commentTableInfo['is_private'])) {
+    $commentFirst['is_private'] = 0;
+}
+insertRow($pdo, 'comments', $commentFirst);
 
-insertRow($pdo, 'comments', [
+$commentSecond = [
     'task_id' => $taskBId,
     'user_id' => $userId,
     'date_creation' => $fixtureTimestamp,
     'date_modification' => $fixtureTimestamp,
     'comment' => 'Second fixture comment.',
     'reference' => '',
-]);
+];
+if (isset($commentTableInfo['is_private'])) {
+    $commentSecond['is_private'] = 0;
+}
+insertRow($pdo, 'comments', $commentSecond);
 
 insertRow($pdo, 'subtasks', [
     'title' => 'Draft fixture checklist',

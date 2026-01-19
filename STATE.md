@@ -34,3 +34,4 @@
 32. [x] Verify fixture task time tracking values (time_spent, time_estimated) in fixture and round-trip scripts.
 33. [x] Verify fixture task completion dates (date_completed) in fixture and round-trip scripts.
 34. [x] Verify fixture task score values in fixture and round-trip scripts.
+35. [x] Verify fixture comment privacy flags (is_private) in fixture and round-trip scripts.

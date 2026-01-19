@@ -684,6 +684,27 @@ if (isset($commentColumns['reference'])) {
     }
 }
 
+if (isset($commentColumns['is_private'])) {
+    $commentPrivacy = $pdo->query(
+        "SELECT tasks.title AS task_title, comments.is_private AS is_private
+         FROM comments
+         JOIN tasks ON tasks.id = comments.task_id
+         ORDER BY comments.id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $commentPrivacy = array_map(static function (array $row): array {
+        $row['is_private'] = (int) $row['is_private'];
+        return $row;
+    }, $commentPrivacy);
+    $expectedCommentPrivacy = [
+        ['task_title' => 'Fixture Task A', 'is_private' => 0],
+        ['task_title' => 'Fixture Task B', 'is_private' => 0],
+    ];
+    if ($commentPrivacy !== $expectedCommentPrivacy) {
+        fwrite(STDERR, "Unexpected comment privacy flags: " . json_encode($commentPrivacy) . "\n");
+        exit(1);
+    }
+}
+
 $commentTimestamps = $pdo->query(
     "SELECT tasks.title AS task_title, comments.date_creation AS date_creation, comments.date_modification AS date_modification
      FROM comments
