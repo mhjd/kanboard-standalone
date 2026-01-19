@@ -131,6 +131,36 @@ if ($userId <= 0) {
     fail("Unexpected user id: {$userId}");
 }
 
+$projectColumns = tableColumns($pdo, 'projects');
+$projectMetaFields = [];
+if (isset($projectColumns['owner_id'])) {
+    $projectMetaFields[] = 'owner_id';
+}
+if (isset($projectColumns['last_modified'])) {
+    $projectMetaFields[] = 'last_modified';
+}
+if ($projectMetaFields !== []) {
+    $projectMeta = $pdo->query(
+        'SELECT ' . implode(', ', $projectMetaFields) . ' FROM projects ORDER BY id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $projectMeta = array_map(static function (array $row) use ($projectMetaFields): array {
+        foreach ($projectMetaFields as $field) {
+            $row[$field] = (int) $row[$field];
+        }
+        return $row;
+    }, $projectMeta);
+
+    $expectedProjectMetaRow = [];
+    foreach ($projectMetaFields as $field) {
+        $expectedProjectMetaRow[$field] = $field === 'owner_id' ? $userId : $fixtureTimestamp;
+    }
+    $expectedProjectMeta = [$expectedProjectMetaRow];
+
+    if ($projectMeta !== $expectedProjectMeta) {
+        fail("Unexpected project owner/last_modified metadata: " . json_encode($projectMeta));
+    }
+}
+
 $projectMappings = [
     'columns' => $pdo->query("SELECT DISTINCT project_id FROM columns ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
     'tasks' => $pdo->query("SELECT DISTINCT project_id FROM tasks ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
