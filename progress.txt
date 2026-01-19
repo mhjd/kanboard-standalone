@@ -55,3 +55,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Verified fixture subtask user_id mapping in fixture + round-trip scripts. Verification: make fixtures failed (docker permission denied); sudo make fixtures (ok).
 2026-01-19: Added recurrence metadata checks in fixture + round-trip verification scripts. Verification: make fixtures failed (docker permission denied); sudo make fixtures (ok).
 2026-01-19: Added fixture project token value with conditional checks in fixture + round-trip verification scripts. Verification: `sudo make ci-docker` (ok).
+2026-01-19: Added fixture user profile fields (name/email/timezone/language) to fixture + verification scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).

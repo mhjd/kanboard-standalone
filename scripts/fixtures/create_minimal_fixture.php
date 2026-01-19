@@ -132,6 +132,41 @@ if ($userId <= 0) {
     exit(1);
 }
 
+$userInfo = tableInfo($pdo, 'users');
+$userProfile = [];
+if (isset($userInfo['name'])) {
+    $userProfile['name'] = 'Fixture Admin';
+}
+if (isset($userInfo['email'])) {
+    $userProfile['email'] = 'fixture@example.com';
+}
+if (isset($userInfo['timezone'])) {
+    $userProfile['timezone'] = 'UTC';
+}
+if (isset($userInfo['language'])) {
+    $userProfile['language'] = 'en_US';
+}
+
+if ($userProfile !== []) {
+    $setClauses = [];
+    $values = [];
+    foreach ($userProfile as $column => $value) {
+        $setClauses[] = $column . ' = ?';
+        $values[] = $value;
+    }
+    $values[] = $userId;
+
+    $stmt = $pdo->prepare('UPDATE users SET ' . implode(', ', $setClauses) . ' WHERE id = ?');
+    if ($stmt === false) {
+        fwrite(STDERR, "Failed to prepare user profile update statement.\n");
+        exit(1);
+    }
+    if (!$stmt->execute($values)) {
+        fwrite(STDERR, "Failed to update user profile fields for fixture.\n");
+        exit(1);
+    }
+}
+
 $projectInfo = tableInfo($pdo, 'projects');
 $projectRow = [
     'name' => 'Fixture Project',

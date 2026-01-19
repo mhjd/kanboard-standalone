@@ -157,6 +157,36 @@ if ($userFields !== []) {
     }
 }
 
+$userProfileFields = [];
+foreach (['name', 'email', 'timezone', 'language'] as $field) {
+    if (isset($userColumns[$field])) {
+        $userProfileFields[] = $field;
+    }
+}
+if ($userProfileFields !== []) {
+    $userProfiles = $pdo->query(
+        'SELECT ' . implode(', ', $userProfileFields) . ' FROM users ORDER BY id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
+
+    $expectedProfile = [];
+    foreach ($userProfileFields as $field) {
+        if ($field === 'name') {
+            $expectedProfile[$field] = 'Fixture Admin';
+        } elseif ($field === 'email') {
+            $expectedProfile[$field] = 'fixture@example.com';
+        } elseif ($field === 'timezone') {
+            $expectedProfile[$field] = 'UTC';
+        } elseif ($field === 'language') {
+            $expectedProfile[$field] = 'en_US';
+        }
+    }
+
+    if ($userProfiles !== [$expectedProfile]) {
+        fwrite(STDERR, "Unexpected user profile fields: " . json_encode($userProfiles) . "\n");
+        exit(1);
+    }
+}
+
 $projectColumns = tableColumns($pdo, 'projects');
 $projectMetaFields = [];
 if (isset($projectColumns['owner_id'])) {
