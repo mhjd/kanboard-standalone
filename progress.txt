@@ -45,3 +45,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Added fixture category creation + category mapping checks in fixture and round-trip scripts. Verification: make ci-docker failed (docker permission denied); sudo make ci-docker (ok).
 2026-01-19: Added fixture tag + task tag mapping checks in fixture and round-trip scripts. Verification: make ci-docker failed (docker permission denied); sudo make ci-docker (ok).
 2026-01-19: Added fixture task start date values + checks in fixture and round-trip scripts. Verification: `make fixtures` failed (docker permission denied); `sudo make fixtures` (ok).
+2026-01-19: Added fixture task time_spent/time_estimated values and verification in fixture + round-trip scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).

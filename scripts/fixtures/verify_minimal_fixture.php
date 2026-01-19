@@ -478,6 +478,44 @@ if (isset($taskTableColumns['date_started'])) {
     }
 }
 
+$taskTimeFields = [];
+if (isset($taskTableColumns['time_spent'])) {
+    $taskTimeFields[] = 'time_spent';
+}
+if (isset($taskTableColumns['time_estimated'])) {
+    $taskTimeFields[] = 'time_estimated';
+}
+if ($taskTimeFields !== []) {
+    $selectFields = array_merge(['title'], $taskTimeFields);
+    $taskTimes = $pdo->query(
+        "SELECT " . implode(', ', $selectFields) . " FROM tasks ORDER BY id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $taskTimes = array_map(static function (array $row) use ($taskTimeFields): array {
+        foreach ($taskTimeFields as $field) {
+            $row[$field] = (int) $row[$field];
+        }
+        return $row;
+    }, $taskTimes);
+
+    $expectedTaskTimes = [];
+    $expectedSeed = [
+        'Fixture Task A' => ['time_spent' => 90, 'time_estimated' => 240],
+        'Fixture Task B' => ['time_spent' => 30, 'time_estimated' => 120],
+    ];
+    foreach (['Fixture Task A', 'Fixture Task B'] as $title) {
+        $row = ['title' => $title];
+        foreach ($taskTimeFields as $field) {
+            $row[$field] = $expectedSeed[$title][$field];
+        }
+        $expectedTaskTimes[] = $row;
+    }
+
+    if ($taskTimes !== $expectedTaskTimes) {
+        fwrite(STDERR, "Unexpected task time tracking values: " . json_encode($taskTimes) . "\n");
+        exit(1);
+    }
+}
+
 $taskTimestamps = $pdo->query(
     "SELECT title, date_creation, date_modification, date_moved
      FROM tasks

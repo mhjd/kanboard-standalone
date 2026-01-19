@@ -228,6 +228,12 @@ $taskAData = [
 if (isset($taskTableInfo['date_started'])) {
     $taskAData['date_started'] = $fixtureTimestamp + 3600;
 }
+if (isset($taskTableInfo['time_spent'])) {
+    $taskAData['time_spent'] = 90;
+}
+if (isset($taskTableInfo['time_estimated'])) {
+    $taskAData['time_estimated'] = 240;
+}
 $taskAId = insertRow($pdo, 'tasks', $taskAData);
 
 $taskBData = [
@@ -251,6 +257,12 @@ $taskBData = [
 ];
 if (isset($taskTableInfo['date_started'])) {
     $taskBData['date_started'] = $fixtureTimestamp + 7200;
+}
+if (isset($taskTableInfo['time_spent'])) {
+    $taskBData['time_spent'] = 30;
+}
+if (isset($taskTableInfo['time_estimated'])) {
+    $taskBData['time_estimated'] = 120;
 }
 $taskBId = insertRow($pdo, 'tasks', $taskBData);
 
