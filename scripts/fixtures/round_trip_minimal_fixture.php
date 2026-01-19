@@ -7,6 +7,7 @@ use Pimple\Container;
 
 $root = dirname(__DIR__, 2);
 $fixturePath = $root . '/tests/fixtures/kanboard-minimal.db';
+$fixtureTimestamp = 1704067200; // 2024-01-01T00:00:00Z
 
 function fail(string $message): void
 {
@@ -146,6 +147,35 @@ if ($taskDescriptions !== $expectedTaskDescriptions) {
     fail("Unexpected task descriptions: " . json_encode($taskDescriptions));
 }
 
+$taskTimestamps = $pdo->query(
+    "SELECT title, date_creation, date_modification, date_moved
+     FROM tasks
+     ORDER BY id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$taskTimestamps = array_map(static function (array $row): array {
+    $row['date_creation'] = (int) $row['date_creation'];
+    $row['date_modification'] = (int) $row['date_modification'];
+    $row['date_moved'] = (int) $row['date_moved'];
+    return $row;
+}, $taskTimestamps);
+$expectedTaskTimestamps = [
+    [
+        'title' => 'Fixture Task A',
+        'date_creation' => $fixtureTimestamp,
+        'date_modification' => $fixtureTimestamp,
+        'date_moved' => $fixtureTimestamp,
+    ],
+    [
+        'title' => 'Fixture Task B',
+        'date_creation' => $fixtureTimestamp,
+        'date_modification' => $fixtureTimestamp,
+        'date_moved' => $fixtureTimestamp,
+    ],
+];
+if ($taskTimestamps !== $expectedTaskTimestamps) {
+    fail("Unexpected task timestamps: " . json_encode($taskTimestamps));
+}
+
 $columnPositions = $pdo->query("SELECT title, position FROM columns ORDER BY position ASC")->fetchAll(PDO::FETCH_KEY_PAIR);
 $expectedColumns = [
     'Backlog' => 1,
@@ -207,6 +237,25 @@ $expectedComments = [
 ];
 if ($commentRows !== $expectedComments) {
     fail("Unexpected comment contents: " . json_encode($commentRows));
+}
+
+$commentTimestamps = $pdo->query(
+    "SELECT tasks.title AS task_title, comments.date_creation AS date_creation, comments.date_modification AS date_modification
+     FROM comments
+     JOIN tasks ON tasks.id = comments.task_id
+     ORDER BY comments.id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$commentTimestamps = array_map(static function (array $row): array {
+    $row['date_creation'] = (int) $row['date_creation'];
+    $row['date_modification'] = (int) $row['date_modification'];
+    return $row;
+}, $commentTimestamps);
+$expectedCommentTimestamps = [
+    ['task_title' => 'Fixture Task A', 'date_creation' => $fixtureTimestamp, 'date_modification' => $fixtureTimestamp],
+    ['task_title' => 'Fixture Task B', 'date_creation' => $fixtureTimestamp, 'date_modification' => $fixtureTimestamp],
+];
+if ($commentTimestamps !== $expectedCommentTimestamps) {
+    fail("Unexpected comment timestamps: " . json_encode($commentTimestamps));
 }
 
 $subtaskTasks = $pdo->query("SELECT task_id FROM subtasks ORDER BY position ASC")->fetchAll(PDO::FETCH_COLUMN);
