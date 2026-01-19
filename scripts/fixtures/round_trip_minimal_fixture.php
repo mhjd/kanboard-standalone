@@ -142,6 +142,46 @@ if ($userId <= 0) {
     fail("Unexpected user id: {$userId}");
 }
 
+$userColumns = tableColumns($pdo, 'users');
+$userFields = [];
+foreach (['username', 'role', 'is_admin', 'is_project_admin', 'is_active'] as $field) {
+    if (isset($userColumns[$field])) {
+        $userFields[] = $field;
+    }
+}
+if ($userFields !== []) {
+    $users = $pdo->query(
+        'SELECT ' . implode(', ', $userFields) . ' FROM users ORDER BY id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $users = array_map(static function (array $row): array {
+        foreach (['is_admin', 'is_project_admin', 'is_active'] as $field) {
+            if (array_key_exists($field, $row)) {
+                $row[$field] = (int) $row[$field];
+            }
+        }
+        return $row;
+    }, $users);
+
+    $expectedUser = [];
+    foreach ($userFields as $field) {
+        if ($field === 'username') {
+            $expectedUser[$field] = 'admin';
+        } elseif ($field === 'role') {
+            $expectedUser[$field] = 'app-admin';
+        } elseif ($field === 'is_admin') {
+            $expectedUser[$field] = 1;
+        } elseif ($field === 'is_project_admin') {
+            $expectedUser[$field] = 0;
+        } elseif ($field === 'is_active') {
+            $expectedUser[$field] = 1;
+        }
+    }
+
+    if ($users !== [$expectedUser]) {
+        fail("Unexpected user metadata: " . json_encode($users));
+    }
+}
+
 $projectColumns = tableColumns($pdo, 'projects');
 $projectMetaFields = [];
 if (isset($projectColumns['owner_id'])) {

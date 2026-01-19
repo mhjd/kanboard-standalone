@@ -35,3 +35,4 @@
 33. [x] Verify fixture task completion dates (date_completed) in fixture and round-trip scripts.
 34. [x] Verify fixture task score values in fixture and round-trip scripts.
 35. [x] Verify fixture comment privacy flags (is_private) in fixture and round-trip scripts.
+36. [x] Verify fixture user metadata (username/role/is_admin/is_active) in fixture and round-trip scripts.
