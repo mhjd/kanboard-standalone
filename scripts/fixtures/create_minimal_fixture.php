@@ -237,6 +237,9 @@ if (isset($taskTableInfo['time_spent'])) {
 if (isset($taskTableInfo['time_estimated'])) {
     $taskAData['time_estimated'] = 240;
 }
+if (isset($taskTableInfo['score'])) {
+    $taskAData['score'] = 8;
+}
 $taskAId = insertRow($pdo, 'tasks', $taskAData);
 
 $taskBData = [
@@ -269,6 +272,9 @@ if (isset($taskTableInfo['time_spent'])) {
 }
 if (isset($taskTableInfo['time_estimated'])) {
     $taskBData['time_estimated'] = 120;
+}
+if (isset($taskTableInfo['score'])) {
+    $taskBData['score'] = 3;
 }
 $taskBId = insertRow($pdo, 'tasks', $taskBData);
 

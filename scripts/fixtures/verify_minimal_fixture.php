@@ -446,6 +446,22 @@ if (isset($taskTableColumns['priority'])) {
     }
 }
 
+if (isset($taskTableColumns['score'])) {
+    $taskScores = $pdo->query("SELECT title, score FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskScores = array_map(static function (array $row): array {
+        $row['score'] = (int) $row['score'];
+        return $row;
+    }, $taskScores);
+    $expectedTaskScores = [
+        ['title' => 'Fixture Task A', 'score' => 8],
+        ['title' => 'Fixture Task B', 'score' => 3],
+    ];
+    if ($taskScores !== $expectedTaskScores) {
+        fwrite(STDERR, "Unexpected task scores: " . json_encode($taskScores) . "\n");
+        exit(1);
+    }
+}
+
 if (isset($taskTableColumns['date_due'])) {
     $taskDueDates = $pdo->query("SELECT title, date_due FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
     $taskDueDates = array_map(static function (array $row): array {
