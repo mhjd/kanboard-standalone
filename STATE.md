@@ -12,3 +12,4 @@
 10. [x] Verify fixture task positions in fixture and round-trip scripts.
 11. [x] Verify swimlane metadata and task swimlane mapping in fixture and round-trip scripts.
 12. [x] Verify fixture task descriptions in fixture and round-trip scripts.
+13. [x] Verify fixture project metadata in fixture and round-trip scripts.

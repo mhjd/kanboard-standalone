@@ -37,6 +37,32 @@ foreach ($checks as $table => $expected) {
     }
 }
 
+$projectRows = $pdo->query(
+    "SELECT name, description, identifier, is_active, is_private, is_public
+     FROM projects
+     ORDER BY id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$projectRows = array_map(static function (array $row): array {
+    $row['is_active'] = (int) $row['is_active'];
+    $row['is_private'] = (int) $row['is_private'];
+    $row['is_public'] = (int) $row['is_public'];
+    return $row;
+}, $projectRows);
+$expectedProjects = [
+    [
+        'name' => 'Fixture Project',
+        'description' => 'Minimal Kanboard fixture project for tests.',
+        'identifier' => 'FIXTURE',
+        'is_active' => 1,
+        'is_private' => 0,
+        'is_public' => 0,
+    ],
+];
+if ($projectRows !== $expectedProjects) {
+    fwrite(STDERR, "Unexpected project metadata: " . json_encode($projectRows) . "\n");
+    exit(1);
+}
+
 $swimlaneRows = $pdo->query("SELECT name, position, is_active FROM swimlanes ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $expectedSwimlanes = [
     ['name' => 'Default swimlane', 'position' => 1, 'is_active' => 1],
