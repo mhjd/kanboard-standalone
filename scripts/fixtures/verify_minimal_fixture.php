@@ -258,6 +258,19 @@ if ($taskDescriptions !== $expectedTaskDescriptions) {
     exit(1);
 }
 
+$taskTableColumns = tableColumns($pdo, 'tasks');
+if (isset($taskTableColumns['reference'])) {
+    $taskReferences = $pdo->query("SELECT title, reference FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $expectedTaskReferences = [
+        ['title' => 'Fixture Task A', 'reference' => ''],
+        ['title' => 'Fixture Task B', 'reference' => ''],
+    ];
+    if ($taskReferences !== $expectedTaskReferences) {
+        fwrite(STDERR, "Unexpected task references: " . json_encode($taskReferences) . "\n");
+        exit(1);
+    }
+}
+
 $taskActiveFlags = $pdo->query("SELECT title, is_active FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $taskActiveFlags = array_map(static function (array $row): array {
     $row['is_active'] = (int) $row['is_active'];
@@ -272,7 +285,6 @@ if ($taskActiveFlags !== $expectedTaskActiveFlags) {
     exit(1);
 }
 
-$taskTableColumns = tableColumns($pdo, 'tasks');
 if (isset($taskTableColumns['priority'])) {
     $taskPriorities = $pdo->query("SELECT title, priority FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
     $taskPriorities = array_map(static function (array $row): array {
