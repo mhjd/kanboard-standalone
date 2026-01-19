@@ -71,6 +71,12 @@ if ($projectId <= 0) {
     exit(1);
 }
 
+$userId = (int) $pdo->query("SELECT id FROM users ORDER BY id ASC LIMIT 1")->fetchColumn();
+if ($userId <= 0) {
+    fwrite(STDERR, "Unexpected user id: {$userId}\n");
+    exit(1);
+}
+
 $projectMappings = [
     'columns' => $pdo->query("SELECT DISTINCT project_id FROM columns ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
     'tasks' => $pdo->query("SELECT DISTINCT project_id FROM tasks ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
@@ -86,6 +92,40 @@ foreach ($projectMappings as $table => $projectIds) {
         fwrite(STDERR, "Unexpected {$table} project mapping: " . json_encode($projectIds) . "\n");
         exit(1);
     }
+}
+
+$taskOwnership = $pdo->query("SELECT title, creator_id, owner_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$taskOwnership = array_map(static function (array $row): array {
+    $row['creator_id'] = (int) $row['creator_id'];
+    $row['owner_id'] = (int) $row['owner_id'];
+    return $row;
+}, $taskOwnership);
+$expectedTaskOwnership = [
+    ['title' => 'Fixture Task A', 'creator_id' => $userId, 'owner_id' => $userId],
+    ['title' => 'Fixture Task B', 'creator_id' => $userId, 'owner_id' => $userId],
+];
+if ($taskOwnership !== $expectedTaskOwnership) {
+    fwrite(STDERR, "Unexpected task ownership mapping: " . json_encode($taskOwnership) . "\n");
+    exit(1);
+}
+
+$commentAuthors = $pdo->query(
+    "SELECT tasks.title AS task_title, comments.user_id AS user_id
+     FROM comments
+     JOIN tasks ON tasks.id = comments.task_id
+     ORDER BY comments.id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$commentAuthors = array_map(static function (array $row): array {
+    $row['user_id'] = (int) $row['user_id'];
+    return $row;
+}, $commentAuthors);
+$expectedCommentAuthors = [
+    ['task_title' => 'Fixture Task A', 'user_id' => $userId],
+    ['task_title' => 'Fixture Task B', 'user_id' => $userId],
+];
+if ($commentAuthors !== $expectedCommentAuthors) {
+    fwrite(STDERR, "Unexpected comment author mapping: " . json_encode($commentAuthors) . "\n");
+    exit(1);
 }
 
 $swimlaneRows = $pdo->query("SELECT name, position, is_active FROM swimlanes ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
