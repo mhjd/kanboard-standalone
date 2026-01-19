@@ -5,7 +5,7 @@ PHP_IMAGE ?= php:8.2-cli
 VERSION := $(shell git rev-parse --short HEAD)
 
 .PHONY: archive fixtures test test-sqlite test-mysql test-postgres sql \
-	build dev format lint ci docker-image docker-images docker-run docker-sh
+	build dev format lint ci ci-docker docker-image docker-images docker-run docker-sh
 
 archive:
 	@ echo "Build archive: version=$(VERSION)"
@@ -55,6 +55,9 @@ lint:
 
 # CI: format + lint + test + build + fixtures
 ci: format lint test build fixtures
+
+# Docker-friendly CI alias for headless environments
+ci-docker: ci
 
 sql:
 	@ pg_dump --schema-only --no-owner --no-privileges --quote-all-identifiers -n public --file app/Schema/Sql/postgres.sql kanboard

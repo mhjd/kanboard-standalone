@@ -14,3 +14,4 @@
 12. [x] Verify fixture task descriptions in fixture and round-trip scripts.
 13. [x] Verify fixture project metadata in fixture and round-trip scripts.
 14. [x] Verify fixture task and comment timestamps in fixture and round-trip scripts.
+15. [x] Add a docker-based ci-docker Makefile target alias for verification.
