@@ -228,6 +228,9 @@ $taskAData = [
 if (isset($taskTableInfo['date_started'])) {
     $taskAData['date_started'] = $fixtureTimestamp + 3600;
 }
+if (isset($taskTableInfo['date_completed'])) {
+    $taskAData['date_completed'] = 0;
+}
 if (isset($taskTableInfo['time_spent'])) {
     $taskAData['time_spent'] = 90;
 }
@@ -257,6 +260,9 @@ $taskBData = [
 ];
 if (isset($taskTableInfo['date_started'])) {
     $taskBData['date_started'] = $fixtureTimestamp + 7200;
+}
+if (isset($taskTableInfo['date_completed'])) {
+    $taskBData['date_completed'] = 0;
 }
 if (isset($taskTableInfo['time_spent'])) {
     $taskBData['time_spent'] = 30;

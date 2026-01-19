@@ -32,3 +32,4 @@
 30. [x] Verify fixture tag mapping in fixture and round-trip scripts.
 31. [x] Verify fixture task start dates in fixture and round-trip scripts.
 32. [x] Verify fixture task time tracking values (time_spent, time_estimated) in fixture and round-trip scripts.
+33. [x] Verify fixture task completion dates (date_completed) in fixture and round-trip scripts.

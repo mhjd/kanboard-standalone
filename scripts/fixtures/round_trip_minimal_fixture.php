@@ -489,6 +489,21 @@ if (isset($taskTableColumns['date_started'])) {
     }
 }
 
+if (isset($taskTableColumns['date_completed'])) {
+    $taskCompletedDates = $pdo->query("SELECT title, date_completed FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskCompletedDates = array_map(static function (array $row): array {
+        $row['date_completed'] = (int) $row['date_completed'];
+        return $row;
+    }, $taskCompletedDates);
+    $expectedTaskCompletedDates = [
+        ['title' => 'Fixture Task A', 'date_completed' => 0],
+        ['title' => 'Fixture Task B', 'date_completed' => 0],
+    ];
+    if ($taskCompletedDates !== $expectedTaskCompletedDates) {
+        fail("Unexpected task completion dates: " . json_encode($taskCompletedDates));
+    }
+}
+
 $taskTimeFields = [];
 if (isset($taskTableColumns['time_spent'])) {
     $taskTimeFields[] = 'time_spent';
