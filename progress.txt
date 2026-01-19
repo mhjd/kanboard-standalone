@@ -18,3 +18,4 @@ Round-trip verification passed. (ok).
 2026-01-18: Added fixture comment/subtask content checks in verification scripts. Verification: `sudo make fixtures` (ok).
 2026-01-18: Added SQLite integrity_check to fixture verification script. Verification: `make fixtures` failed (docker permission denied), `sudo make fixtures` (ok).
 2026-01-19: Added fixture task-to-column mapping checks in fixture + round-trip verification scripts. Verification: `make fixtures` failed (docker permission denied); `sudo make fixtures` (ok).
+2026-01-19: Added fixture task position checks in fixture + round-trip verification scripts. Verification: `make fixtures` failed (docker permission denied); `sudo make fixtures` (ok).

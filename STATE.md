@@ -9,3 +9,4 @@
 7. [x] Validate fixture comment text and subtask status in verification scripts.
 8. [x] Add SQLite integrity_check to fixture verification.
 9. [x] Verify fixture task-to-column mapping in fixture and round-trip scripts.
+10. [x] Verify fixture task positions in fixture and round-trip scripts.
