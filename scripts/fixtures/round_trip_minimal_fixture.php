@@ -226,6 +226,41 @@ if ($projectHasUsersColumns !== []) {
     }
 }
 
+$categoryId = null;
+$categoryColumns = tableColumns($pdo, 'project_has_categories');
+if ($categoryColumns !== []) {
+    $categoryRows = $pdo->query(
+        "SELECT name, project_id FROM project_has_categories ORDER BY id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $expectedCategoryRows = [
+        ['name' => 'Fixture Category', 'project_id' => $projectId],
+    ];
+    if ($categoryRows !== $expectedCategoryRows) {
+        fail("Unexpected project categories: " . json_encode($categoryRows));
+    }
+
+    $categoryId = (int) $pdo->query("SELECT id FROM project_has_categories ORDER BY id ASC")->fetchColumn();
+    if ($categoryId <= 0) {
+        fail("Unexpected category id: {$categoryId}");
+    }
+
+    if (isset($categoryColumns['color_id'])) {
+        $categoryColors = $pdo->query("SELECT color_id FROM project_has_categories ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
+        if ($categoryColors !== ['green']) {
+            fail("Unexpected category colors: " . json_encode($categoryColors));
+        }
+    }
+
+    if (isset($categoryColumns['description'])) {
+        $categoryDescriptions = $pdo->query(
+            "SELECT description FROM project_has_categories ORDER BY id ASC"
+        )->fetchAll(PDO::FETCH_COLUMN);
+        if ($categoryDescriptions !== ['Fixture category for tests.']) {
+            fail("Unexpected category descriptions: " . json_encode($categoryDescriptions));
+        }
+    }
+}
+
 $taskOwnership = $pdo->query("SELECT title, creator_id, owner_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $taskOwnership = array_map(static function (array $row): array {
     $row['creator_id'] = (int) $row['creator_id'];
@@ -308,6 +343,21 @@ if (isset($taskTableColumns['reference'])) {
     ];
     if ($taskReferences !== $expectedTaskReferences) {
         fail("Unexpected task references: " . json_encode($taskReferences));
+    }
+}
+
+if ($categoryId !== null && isset($taskTableColumns['category_id'])) {
+    $taskCategories = $pdo->query("SELECT title, category_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskCategories = array_map(static function (array $row): array {
+        $row['category_id'] = (int) $row['category_id'];
+        return $row;
+    }, $taskCategories);
+    $expectedTaskCategories = [
+        ['title' => 'Fixture Task A', 'category_id' => $categoryId],
+        ['title' => 'Fixture Task B', 'category_id' => 0],
+    ];
+    if ($taskCategories !== $expectedTaskCategories) {
+        fail("Unexpected task category mapping: " . json_encode($taskCategories));
     }
 }
 

@@ -41,3 +41,5 @@ Fixture verification passed.
 Round-trip verification passed. (failed: no schema_version table); Fixture database created at /app/tests/fixtures/kanboard-minimal.db
 Fixture verification passed.
 Round-trip verification passed. (ok).
+2026-01-19: Added fixture category creation + category mapping checks in fixture and round-trip scripts. Verification: \ failed (docker permission denied); \ (ok).
+2026-01-19: Added fixture category creation + category mapping checks in fixture and round-trip scripts. Verification: make ci-docker failed (docker permission denied); sudo make ci-docker (ok).

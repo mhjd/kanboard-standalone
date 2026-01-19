@@ -28,3 +28,4 @@
 26. [x] Verify fixture task due dates in fixture and round-trip scripts.
 27. [x] Verify fixture task external_provider/external_uri values in fixture and round-trip scripts.
 28. [x] Verify fixture schema_version matches Schema\VERSION when present in fixture and round-trip scripts.
+29. [x] Verify fixture task category mapping in fixture and round-trip scripts.

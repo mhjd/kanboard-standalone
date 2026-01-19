@@ -168,6 +168,25 @@ $swimlaneId = insertRow($pdo, 'swimlanes', [
     'project_id' => $projectId,
 ]);
 
+$categoryId = 0;
+$categoryTableInfo = tableInfo($pdo, 'project_has_categories');
+if ($categoryTableInfo !== []) {
+    $categoryRow = [
+        'name' => 'Fixture Category',
+        'project_id' => $projectId,
+    ];
+
+    if (isset($categoryTableInfo['color_id'])) {
+        $categoryRow['color_id'] = 'green';
+    }
+
+    if (isset($categoryTableInfo['description'])) {
+        $categoryRow['description'] = 'Fixture category for tests.';
+    }
+
+    $categoryId = insertRow($pdo, 'project_has_categories', $categoryRow);
+}
+
 $columns = [
     'Backlog',
     'In Progress',
@@ -184,6 +203,8 @@ foreach ($columns as $index => $title) {
         'hide_in_dashboard' => 0,
     ]);
 }
+
+$taskTableInfo = tableInfo($pdo, 'tasks');
 
 $taskAId = insertRow($pdo, 'tasks', [
     'title' => 'Fixture Task A',
@@ -202,6 +223,7 @@ $taskAId = insertRow($pdo, 'tasks', [
     'creator_id' => $userId,
     'owner_id' => $userId,
     'is_active' => 1,
+    'category_id' => isset($taskTableInfo['category_id']) ? ($categoryId > 0 ? $categoryId : 0) : null,
 ]);
 
 $taskBId = insertRow($pdo, 'tasks', [
@@ -221,6 +243,7 @@ $taskBId = insertRow($pdo, 'tasks', [
     'creator_id' => $userId,
     'owner_id' => $userId,
     'is_active' => 1,
+    'category_id' => isset($taskTableInfo['category_id']) ? 0 : null,
 ]);
 
 insertRow($pdo, 'comments', [
