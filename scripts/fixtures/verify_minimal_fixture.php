@@ -271,6 +271,34 @@ if (isset($taskTableColumns['reference'])) {
     }
 }
 
+$externalTaskFields = [];
+if (isset($taskTableColumns['external_provider'])) {
+    $externalTaskFields[] = 'external_provider';
+}
+if (isset($taskTableColumns['external_uri'])) {
+    $externalTaskFields[] = 'external_uri';
+}
+if ($externalTaskFields !== []) {
+    $selectFields = array_merge(['title'], $externalTaskFields);
+    $taskExternal = $pdo->query(
+        "SELECT " . implode(', ', $selectFields) . " FROM tasks ORDER BY id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+
+    $expectedTaskExternal = [];
+    foreach (['Fixture Task A', 'Fixture Task B'] as $title) {
+        $row = ['title' => $title];
+        foreach ($externalTaskFields as $field) {
+            $row[$field] = null;
+        }
+        $expectedTaskExternal[] = $row;
+    }
+
+    if ($taskExternal !== $expectedTaskExternal) {
+        fwrite(STDERR, "Unexpected task external metadata: " . json_encode($taskExternal) . "\n");
+        exit(1);
+    }
+}
+
 $taskActiveFlags = $pdo->query("SELECT title, is_active FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $taskActiveFlags = array_map(static function (array $row): array {
     $row['is_active'] = (int) $row['is_active'];

@@ -26,3 +26,4 @@
 24. [x] Verify fixture subtask positions in fixture and round-trip scripts.
 25. [x] Verify fixture task reference values in fixture and round-trip scripts.
 26. [x] Verify fixture task due dates in fixture and round-trip scripts.
+27. [x] Verify fixture task external_provider/external_uri values in fixture and round-trip scripts.
