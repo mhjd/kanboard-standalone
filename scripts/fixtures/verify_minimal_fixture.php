@@ -55,6 +55,21 @@ if ($columnPositions !== $expectedColumns) {
     exit(1);
 }
 
+$taskColumns = $pdo->query(
+    "SELECT tasks.title AS task_title, columns.title AS column_title
+     FROM tasks
+     JOIN columns ON columns.id = tasks.column_id
+     ORDER BY tasks.id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$expectedTaskColumns = [
+    ['task_title' => 'Fixture Task A', 'column_title' => 'Backlog'],
+    ['task_title' => 'Fixture Task B', 'column_title' => 'In Progress'],
+];
+if ($taskColumns !== $expectedTaskColumns) {
+    fwrite(STDERR, "Unexpected task column mapping: " . json_encode($taskColumns) . "\n");
+    exit(1);
+}
+
 $commentTasks = $pdo->query("SELECT task_id FROM comments ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
 $uniqueCommentTasks = array_values(array_unique($commentTasks));
 if (count($uniqueCommentTasks) !== 2) {

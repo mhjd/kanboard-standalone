@@ -8,3 +8,4 @@
 6. [x] Add Makefile targets dev/test/build/fixtures/ci (documented with comments).
 7. [x] Validate fixture comment text and subtask status in verification scripts.
 8. [x] Add SQLite integrity_check to fixture verification.
+9. [x] Verify fixture task-to-column mapping in fixture and round-trip scripts.
