@@ -288,6 +288,19 @@ if ($taskDescriptions !== $expectedTaskDescriptions) {
     fail("Unexpected task descriptions: " . json_encode($taskDescriptions));
 }
 
+$taskActiveFlags = $pdo->query("SELECT title, is_active FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$taskActiveFlags = array_map(static function (array $row): array {
+    $row['is_active'] = (int) $row['is_active'];
+    return $row;
+}, $taskActiveFlags);
+$expectedTaskActiveFlags = [
+    ['title' => 'Fixture Task A', 'is_active' => 1],
+    ['title' => 'Fixture Task B', 'is_active' => 1],
+];
+if ($taskActiveFlags !== $expectedTaskActiveFlags) {
+    fail("Unexpected task active flags: " . json_encode($taskActiveFlags));
+}
+
 $taskTimestamps = $pdo->query(
     "SELECT title, date_creation, date_modification, date_moved
      FROM tasks

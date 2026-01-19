@@ -21,3 +21,4 @@
 19. [x] Verify fixture column metadata (task_limit, hide_in_dashboard) in fixture and round-trip scripts.
 20. [x] Verify fixture project owner and last_modified metadata in fixture and round-trip scripts.
 21. [x] Verify fixture comment reference values in fixture and round-trip scripts.
+22. [x] Verify fixture task is_active flags in fixture and round-trip scripts.
