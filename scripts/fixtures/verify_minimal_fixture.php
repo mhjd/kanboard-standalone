@@ -233,6 +233,53 @@ if ($categoryColumns !== []) {
     }
 }
 
+$tagId = null;
+$tagColumns = tableColumns($pdo, 'tags');
+if ($tagColumns !== []) {
+    $tagRows = $pdo->query(
+        "SELECT name, project_id FROM tags ORDER BY id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $expectedTagRows = [
+        ['name' => 'Fixture Tag', 'project_id' => $projectId],
+    ];
+    if ($tagRows !== $expectedTagRows) {
+        fwrite(STDERR, "Unexpected tags: " . json_encode($tagRows) . "\n");
+        exit(1);
+    }
+
+    $tagId = (int) $pdo->query("SELECT id FROM tags ORDER BY id ASC")->fetchColumn();
+    if ($tagId <= 0) {
+        fwrite(STDERR, "Unexpected tag id: {$tagId}\n");
+        exit(1);
+    }
+
+    if (isset($tagColumns['color_id'])) {
+        $tagColors = $pdo->query("SELECT color_id FROM tags ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
+        if ($tagColors !== ['red']) {
+            fwrite(STDERR, "Unexpected tag colors: " . json_encode($tagColors) . "\n");
+            exit(1);
+        }
+    }
+}
+
+$taskHasTagsColumns = tableColumns($pdo, 'task_has_tags');
+if ($taskHasTagsColumns !== [] && $tagId !== null) {
+    $taskTags = $pdo->query(
+        "SELECT tasks.title AS task_title, tags.name AS tag_name
+         FROM task_has_tags
+         JOIN tasks ON tasks.id = task_has_tags.task_id
+         JOIN tags ON tags.id = task_has_tags.tag_id
+         ORDER BY task_has_tags.tag_id ASC, task_has_tags.task_id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $expectedTaskTags = [
+        ['task_title' => 'Fixture Task A', 'tag_name' => 'Fixture Tag'],
+    ];
+    if ($taskTags !== $expectedTaskTags) {
+        fwrite(STDERR, "Unexpected task tag mapping: " . json_encode($taskTags) . "\n");
+        exit(1);
+    }
+}
+
 $taskOwnership = $pdo->query("SELECT title, creator_id, owner_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $taskOwnership = array_map(static function (array $row): array {
     $row['creator_id'] = (int) $row['creator_id'];

@@ -246,6 +246,29 @@ $taskBId = insertRow($pdo, 'tasks', [
     'category_id' => isset($taskTableInfo['category_id']) ? 0 : null,
 ]);
 
+$tagId = null;
+$tagTableInfo = tableInfo($pdo, 'tags');
+if ($tagTableInfo !== []) {
+    $tagRow = [
+        'name' => 'Fixture Tag',
+        'project_id' => $projectId,
+    ];
+
+    if (isset($tagTableInfo['color_id'])) {
+        $tagRow['color_id'] = 'red';
+    }
+
+    $tagId = insertRow($pdo, 'tags', $tagRow);
+}
+
+$taskHasTagsInfo = tableInfo($pdo, 'task_has_tags');
+if ($taskHasTagsInfo !== [] && $tagId !== null) {
+    insertRow($pdo, 'task_has_tags', [
+        'task_id' => $taskAId,
+        'tag_id' => $tagId,
+    ]);
+}
+
 insertRow($pdo, 'comments', [
     'task_id' => $taskAId,
     'user_id' => $userId,
