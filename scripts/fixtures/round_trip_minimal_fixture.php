@@ -399,6 +399,23 @@ if ($commentRows !== $expectedComments) {
     fail("Unexpected comment contents: " . json_encode($commentRows));
 }
 
+$commentColumns = tableColumns($pdo, 'comments');
+if (isset($commentColumns['reference'])) {
+    $commentReferences = $pdo->query(
+        "SELECT tasks.title AS task_title, comments.reference AS reference
+         FROM comments
+         JOIN tasks ON tasks.id = comments.task_id
+         ORDER BY comments.id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $expectedCommentReferences = [
+        ['task_title' => 'Fixture Task A', 'reference' => ''],
+        ['task_title' => 'Fixture Task B', 'reference' => ''],
+    ];
+    if ($commentReferences !== $expectedCommentReferences) {
+        fail("Unexpected comment references: " . json_encode($commentReferences));
+    }
+}
+
 $commentTimestamps = $pdo->query(
     "SELECT tasks.title AS task_title, comments.date_creation AS date_creation, comments.date_modification AS date_modification
      FROM comments
