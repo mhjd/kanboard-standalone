@@ -25,3 +25,4 @@
 23. [x] Verify fixture task priority values in fixture and round-trip scripts.
 24. [x] Verify fixture subtask positions in fixture and round-trip scripts.
 25. [x] Verify fixture task reference values in fixture and round-trip scripts.
+26. [x] Verify fixture task due dates in fixture and round-trip scripts.

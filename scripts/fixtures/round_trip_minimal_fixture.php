@@ -328,6 +328,21 @@ if (isset($taskTableColumns['priority'])) {
     }
 }
 
+if (isset($taskTableColumns['date_due'])) {
+    $taskDueDates = $pdo->query("SELECT title, date_due FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskDueDates = array_map(static function (array $row): array {
+        $row['date_due'] = (int) $row['date_due'];
+        return $row;
+    }, $taskDueDates);
+    $expectedTaskDueDates = [
+        ['title' => 'Fixture Task A', 'date_due' => $fixtureTimestamp + 86400],
+        ['title' => 'Fixture Task B', 'date_due' => $fixtureTimestamp + 172800],
+    ];
+    if ($taskDueDates !== $expectedTaskDueDates) {
+        fail("Unexpected task due dates: " . json_encode($taskDueDates));
+    }
+}
+
 $taskTimestamps = $pdo->query(
     "SELECT title, date_creation, date_modification, date_moved
      FROM tasks
