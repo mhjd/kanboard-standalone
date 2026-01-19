@@ -803,6 +803,25 @@ if ($subtaskRows !== $expectedSubtasks) {
 }
 
 $subtaskColumns = tableColumns($pdo, 'subtasks');
+if (isset($subtaskColumns['user_id'])) {
+    $subtaskUsers = $pdo->query(
+        "SELECT tasks.title AS task_title, subtasks.title AS subtask_title, subtasks.user_id AS user_id
+         FROM subtasks
+         JOIN tasks ON tasks.id = subtasks.task_id
+         ORDER BY subtasks.position ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $subtaskUsers = array_map(static function (array $row): array {
+        $row['user_id'] = (int) $row['user_id'];
+        return $row;
+    }, $subtaskUsers);
+    $expectedSubtaskUsers = [
+        ['task_title' => 'Fixture Task A', 'subtask_title' => 'Draft fixture checklist', 'user_id' => $userId],
+        ['task_title' => 'Fixture Task A', 'subtask_title' => 'Verify fixture contents', 'user_id' => $userId],
+    ];
+    if ($subtaskUsers !== $expectedSubtaskUsers) {
+        fail("Unexpected subtask user mapping: " . json_encode($subtaskUsers));
+    }
+}
 $subtaskTimeFields = [];
 if (isset($subtaskColumns['time_spent'])) {
     $subtaskTimeFields[] = 'time_spent';
