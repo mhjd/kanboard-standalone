@@ -472,6 +472,22 @@ if ($taskActiveFlags !== $expectedTaskActiveFlags) {
     exit(1);
 }
 
+if (isset($taskTableColumns['is_milestone'])) {
+    $taskMilestones = $pdo->query("SELECT title, is_milestone FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskMilestones = array_map(static function (array $row): array {
+        $row['is_milestone'] = (int) $row['is_milestone'];
+        return $row;
+    }, $taskMilestones);
+    $expectedTaskMilestones = [
+        ['title' => 'Fixture Task A', 'is_milestone' => 1],
+        ['title' => 'Fixture Task B', 'is_milestone' => 0],
+    ];
+    if ($taskMilestones !== $expectedTaskMilestones) {
+        fwrite(STDERR, "Unexpected task milestone flags: " . json_encode($taskMilestones) . "\n");
+        exit(1);
+    }
+}
+
 if (isset($taskTableColumns['priority'])) {
     $taskPriorities = $pdo->query("SELECT title, priority FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
     $taskPriorities = array_map(static function (array $row): array {

@@ -240,6 +240,9 @@ if (isset($taskTableInfo['time_estimated'])) {
 if (isset($taskTableInfo['score'])) {
     $taskAData['score'] = 8;
 }
+if (isset($taskTableInfo['is_milestone'])) {
+    $taskAData['is_milestone'] = 1;
+}
 $taskAId = insertRow($pdo, 'tasks', $taskAData);
 
 $taskBData = [
@@ -275,6 +278,9 @@ if (isset($taskTableInfo['time_estimated'])) {
 }
 if (isset($taskTableInfo['score'])) {
     $taskBData['score'] = 3;
+}
+if (isset($taskTableInfo['is_milestone'])) {
+    $taskBData['is_milestone'] = 0;
 }
 $taskBId = insertRow($pdo, 'tasks', $taskBData);
 
@@ -329,18 +335,40 @@ if (isset($commentTableInfo['is_private'])) {
 }
 insertRow($pdo, 'comments', $commentSecond);
 
-insertRow($pdo, 'subtasks', [
+$subtaskTableInfo = tableInfo($pdo, 'subtasks');
+
+$subtaskOne = [
     'title' => 'Draft fixture checklist',
     'status' => 0,
     'task_id' => $taskAId,
     'position' => 1,
-]);
+];
+if (isset($subtaskTableInfo['user_id'])) {
+    $subtaskOne['user_id'] = $userId;
+}
+if (isset($subtaskTableInfo['time_spent'])) {
+    $subtaskOne['time_spent'] = 15;
+}
+if (isset($subtaskTableInfo['time_estimated'])) {
+    $subtaskOne['time_estimated'] = 45;
+}
+insertRow($pdo, 'subtasks', $subtaskOne);
 
-insertRow($pdo, 'subtasks', [
+$subtaskTwo = [
     'title' => 'Verify fixture contents',
     'status' => 1,
     'task_id' => $taskAId,
     'position' => 2,
-]);
+];
+if (isset($subtaskTableInfo['user_id'])) {
+    $subtaskTwo['user_id'] = $userId;
+}
+if (isset($subtaskTableInfo['time_spent'])) {
+    $subtaskTwo['time_spent'] = 30;
+}
+if (isset($subtaskTableInfo['time_estimated'])) {
+    $subtaskTwo['time_estimated'] = 90;
+}
+insertRow($pdo, 'subtasks', $subtaskTwo);
 
 echo "Fixture database created at {$fixturePath}\n";

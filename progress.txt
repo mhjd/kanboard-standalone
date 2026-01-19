@@ -51,3 +51,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Added fixture comment is_private field + verification in fixture/round-trip scripts. Verification: `make ci-docker` (docker permission denied); `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture user metadata (username/role/is_admin/is_active) in fixture + round-trip scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture subtask time_spent/time_estimated values in fixture + round-trip scripts. Verification: make ci-docker failed (docker permission denied); sudo make ci-docker (ok).
+2026-01-19: Verified fixture task is_milestone flags in fixture + round-trip scripts. Verification: make ci-docker failed (docker permission denied); sudo make ci-docker (ok).
