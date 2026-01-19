@@ -793,4 +793,66 @@ if ($subtaskRows !== $expectedSubtasks) {
     exit(1);
 }
 
+$subtaskColumns = tableColumns($pdo, 'subtasks');
+$subtaskTimeFields = [];
+if (isset($subtaskColumns['time_spent'])) {
+    $subtaskTimeFields[] = 'time_spent';
+}
+if (isset($subtaskColumns['time_estimated'])) {
+    $subtaskTimeFields[] = 'time_estimated';
+}
+if ($subtaskTimeFields !== []) {
+    $selectFields = [
+        'tasks.title AS task_title',
+        'subtasks.title AS subtask_title',
+    ];
+    foreach ($subtaskTimeFields as $field) {
+        $selectFields[] = 'subtasks.' . $field . ' AS ' . $field;
+    }
+
+    $subtaskTimes = $pdo->query(
+        "SELECT " . implode(', ', $selectFields) . "
+         FROM subtasks
+         JOIN tasks ON tasks.id = subtasks.task_id
+         ORDER BY subtasks.position ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $subtaskTimes = array_map(static function (array $row) use ($subtaskTimeFields): array {
+        foreach ($subtaskTimeFields as $field) {
+            $row[$field] = (int) $row[$field];
+        }
+        return $row;
+    }, $subtaskTimes);
+
+    $expectedSeed = [
+        [
+            'task_title' => 'Fixture Task A',
+            'subtask_title' => 'Draft fixture checklist',
+            'time_spent' => 15,
+            'time_estimated' => 45,
+        ],
+        [
+            'task_title' => 'Fixture Task A',
+            'subtask_title' => 'Verify fixture contents',
+            'time_spent' => 30,
+            'time_estimated' => 90,
+        ],
+    ];
+    $expectedSubtaskTimes = [];
+    foreach ($expectedSeed as $row) {
+        $expectedRow = [
+            'task_title' => $row['task_title'],
+            'subtask_title' => $row['subtask_title'],
+        ];
+        foreach ($subtaskTimeFields as $field) {
+            $expectedRow[$field] = $row[$field];
+        }
+        $expectedSubtaskTimes[] = $expectedRow;
+    }
+
+    if ($subtaskTimes !== $expectedSubtaskTimes) {
+        fwrite(STDERR, "Unexpected subtask time tracking values: " . json_encode($subtaskTimes) . "\n");
+        exit(1);
+    }
+}
+
 echo "Fixture verification passed.\n";
