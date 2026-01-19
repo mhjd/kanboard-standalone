@@ -30,3 +30,4 @@
 28. [x] Verify fixture schema_version matches Schema\VERSION when present in fixture and round-trip scripts.
 29. [x] Verify fixture task category mapping in fixture and round-trip scripts.
 30. [x] Verify fixture tag mapping in fixture and round-trip scripts.
+31. [x] Verify fixture task start dates in fixture and round-trip scripts.

@@ -206,7 +206,7 @@ foreach ($columns as $index => $title) {
 
 $taskTableInfo = tableInfo($pdo, 'tasks');
 
-$taskAId = insertRow($pdo, 'tasks', [
+$taskAData = [
     'title' => 'Fixture Task A',
     'description' => 'First fixture task.',
     'reference' => '',
@@ -224,9 +224,13 @@ $taskAId = insertRow($pdo, 'tasks', [
     'owner_id' => $userId,
     'is_active' => 1,
     'category_id' => isset($taskTableInfo['category_id']) ? ($categoryId > 0 ? $categoryId : 0) : null,
-]);
+];
+if (isset($taskTableInfo['date_started'])) {
+    $taskAData['date_started'] = $fixtureTimestamp + 3600;
+}
+$taskAId = insertRow($pdo, 'tasks', $taskAData);
 
-$taskBId = insertRow($pdo, 'tasks', [
+$taskBData = [
     'title' => 'Fixture Task B',
     'description' => 'Second fixture task.',
     'reference' => '',
@@ -244,7 +248,11 @@ $taskBId = insertRow($pdo, 'tasks', [
     'owner_id' => $userId,
     'is_active' => 1,
     'category_id' => isset($taskTableInfo['category_id']) ? 0 : null,
-]);
+];
+if (isset($taskTableInfo['date_started'])) {
+    $taskBData['date_started'] = $fixtureTimestamp + 7200;
+}
+$taskBId = insertRow($pdo, 'tasks', $taskBData);
 
 $tagId = null;
 $tagTableInfo = tableInfo($pdo, 'tags');

@@ -474,6 +474,21 @@ if (isset($taskTableColumns['date_due'])) {
     }
 }
 
+if (isset($taskTableColumns['date_started'])) {
+    $taskStartDates = $pdo->query("SELECT title, date_started FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskStartDates = array_map(static function (array $row): array {
+        $row['date_started'] = (int) $row['date_started'];
+        return $row;
+    }, $taskStartDates);
+    $expectedTaskStartDates = [
+        ['title' => 'Fixture Task A', 'date_started' => $fixtureTimestamp + 3600],
+        ['title' => 'Fixture Task B', 'date_started' => $fixtureTimestamp + 7200],
+    ];
+    if ($taskStartDates !== $expectedTaskStartDates) {
+        fail("Unexpected task start dates: " . json_encode($taskStartDates));
+    }
+}
+
 $taskTimestamps = $pdo->query(
     "SELECT title, date_creation, date_modification, date_moved
      FROM tasks
