@@ -42,3 +42,4 @@
 40. [x] Verify fixture task recurrence defaults in fixture and round-trip scripts.
 41. [x] Verify fixture project token values in fixture and round-trip scripts.
 42. [x] Verify fixture user profile fields (name/email/timezone/language) in fixture and round-trip scripts.
+43. [x] Add PRD remaining work checklist section.
