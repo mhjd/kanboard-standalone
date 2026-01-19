@@ -39,3 +39,4 @@
 37. [x] Verify fixture subtask time tracking values in fixture and round-trip scripts.
 38. [x] Verify fixture task is_milestone flags in fixture and round-trip scripts.
 39. [x] Verify fixture subtask user ownership mapping in fixture and round-trip scripts.
+40. [x] Verify fixture task recurrence defaults in fixture and round-trip scripts.

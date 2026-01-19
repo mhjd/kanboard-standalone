@@ -520,6 +520,53 @@ if (isset($taskTableColumns['score'])) {
     }
 }
 
+$recurrenceFields = [];
+foreach (['recurrence_status', 'recurrence_trigger', 'recurrence_factor', 'recurrence_timeframe', 'recurrence_basedate'] as $field) {
+    if (isset($taskTableColumns[$field])) {
+        $recurrenceFields[] = $field;
+    }
+}
+$recurrenceNullableFields = [];
+foreach (['recurrence_parent', 'recurrence_child'] as $field) {
+    if (isset($taskTableColumns[$field])) {
+        $recurrenceNullableFields[] = $field;
+    }
+}
+if ($recurrenceFields !== [] || $recurrenceNullableFields !== []) {
+    $selectFields = array_merge(['title'], $recurrenceFields, $recurrenceNullableFields);
+    $taskRecurrence = $pdo->query(
+        "SELECT " . implode(', ', $selectFields) . " FROM tasks ORDER BY id ASC"
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $taskRecurrence = array_map(static function (array $row) use ($recurrenceFields, $recurrenceNullableFields): array {
+        foreach ($recurrenceFields as $field) {
+            $row[$field] = (int) $row[$field];
+        }
+        foreach ($recurrenceNullableFields as $field) {
+            if ($row[$field] !== null) {
+                $row[$field] = (int) $row[$field];
+            }
+        }
+        return $row;
+    }, $taskRecurrence);
+
+    $expectedTaskRecurrence = [];
+    foreach (['Fixture Task A', 'Fixture Task B'] as $title) {
+        $row = ['title' => $title];
+        foreach ($recurrenceFields as $field) {
+            $row[$field] = 0;
+        }
+        foreach ($recurrenceNullableFields as $field) {
+            $row[$field] = null;
+        }
+        $expectedTaskRecurrence[] = $row;
+    }
+
+    if ($taskRecurrence !== $expectedTaskRecurrence) {
+        fwrite(STDERR, "Unexpected task recurrence metadata: " . json_encode($taskRecurrence) . "\n");
+        exit(1);
+    }
+}
+
 if (isset($taskTableColumns['date_due'])) {
     $taskDueDates = $pdo->query("SELECT title, date_due FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
     $taskDueDates = array_map(static function (array $row): array {
