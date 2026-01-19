@@ -17,3 +17,4 @@
 15. [x] Add a docker-based ci-docker Makefile target alias for verification.
 16. [x] Verify fixture project_id mapping for columns, tasks, and swimlanes in fixture and round-trip scripts.
 17. [x] Verify fixture task/comment user ownership mapping in fixture and round-trip scripts.
+18. [x] Verify fixture project_has_users membership mapping in fixture and round-trip scripts.

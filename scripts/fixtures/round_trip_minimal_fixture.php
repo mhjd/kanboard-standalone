@@ -9,6 +9,21 @@ $root = dirname(__DIR__, 2);
 $fixturePath = $root . '/tests/fixtures/kanboard-minimal.db';
 $fixtureTimestamp = 1704067200; // 2024-01-01T00:00:00Z
 
+function tableColumns(PDO $pdo, string $table): array
+{
+    $stmt = $pdo->query("PRAGMA table_info('" . $table . "')");
+    if ($stmt === false) {
+        return [];
+    }
+
+    $columns = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $columns[$row['name']] = true;
+    }
+
+    return $columns;
+}
+
 function fail(string $message): void
 {
     fwrite(STDERR, $message . "\n");
@@ -129,6 +144,44 @@ foreach ($projectMappings as $table => $projectIds) {
 
     if ($projectIds !== [$projectId]) {
         fail("Unexpected {$table} project mapping: " . json_encode($projectIds));
+    }
+}
+
+$projectHasUsersColumns = tableColumns($pdo, 'project_has_users');
+if ($projectHasUsersColumns !== []) {
+    $selectFields = ['project_id', 'user_id'];
+    if (isset($projectHasUsersColumns['role'])) {
+        $selectFields[] = 'role';
+    }
+    if (isset($projectHasUsersColumns['is_owner'])) {
+        $selectFields[] = 'is_owner';
+    }
+
+    $projectUsers = $pdo->query(
+        'SELECT ' . implode(', ', $selectFields) . ' FROM project_has_users ORDER BY project_id ASC, user_id ASC'
+    )->fetchAll(PDO::FETCH_ASSOC);
+    $projectUsers = array_map(static function (array $row): array {
+        $row['project_id'] = (int) $row['project_id'];
+        $row['user_id'] = (int) $row['user_id'];
+        if (array_key_exists('is_owner', $row)) {
+            $row['is_owner'] = (int) $row['is_owner'];
+        }
+        return $row;
+    }, $projectUsers);
+
+    $expectedProjectUsers = [[
+        'project_id' => $projectId,
+        'user_id' => $userId,
+    ]];
+    if (isset($projectHasUsersColumns['role'])) {
+        $expectedProjectUsers[0]['role'] = 'project-manager';
+    }
+    if (isset($projectHasUsersColumns['is_owner'])) {
+        $expectedProjectUsers[0]['is_owner'] = 1;
+    }
+
+    if ($projectUsers !== $expectedProjectUsers) {
+        fail("Unexpected project_has_users mapping: " . json_encode($projectUsers));
     }
 }
 

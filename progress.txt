@@ -26,3 +26,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Added ci-docker Makefile alias for docker-based verification. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture project_id mapping for columns/tasks/swimlanes in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture task/comment user ownership mapping in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
+2026-01-19: Added fixture + round-trip checks for project_has_users membership mapping. Verification: `sudo make ci-docker` (ok).
