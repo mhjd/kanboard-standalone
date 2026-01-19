@@ -23,3 +23,4 @@
 21. [x] Verify fixture comment reference values in fixture and round-trip scripts.
 22. [x] Verify fixture task is_active flags in fixture and round-trip scripts.
 23. [x] Verify fixture task priority values in fixture and round-trip scripts.
+24. [x] Verify fixture subtask positions in fixture and round-trip scripts.

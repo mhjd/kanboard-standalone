@@ -452,18 +452,19 @@ if (count(array_unique($subtaskTasks)) !== 1) {
 }
 
 $subtaskRows = $pdo->query(
-    "SELECT tasks.title AS task_title, subtasks.title AS title, subtasks.status AS status
+    "SELECT tasks.title AS task_title, subtasks.title AS title, subtasks.status AS status, subtasks.position AS position
      FROM subtasks
      JOIN tasks ON tasks.id = subtasks.task_id
      ORDER BY subtasks.position ASC"
 )->fetchAll(PDO::FETCH_ASSOC);
 $subtaskRows = array_map(static function (array $row): array {
     $row['status'] = (int) $row['status'];
+    $row['position'] = (int) $row['position'];
     return $row;
 }, $subtaskRows);
 $expectedSubtasks = [
-    ['task_title' => 'Fixture Task A', 'title' => 'Draft fixture checklist', 'status' => 0],
-    ['task_title' => 'Fixture Task A', 'title' => 'Verify fixture contents', 'status' => 1],
+    ['task_title' => 'Fixture Task A', 'title' => 'Draft fixture checklist', 'status' => 0, 'position' => 1],
+    ['task_title' => 'Fixture Task A', 'title' => 'Verify fixture contents', 'status' => 1, 'position' => 2],
 ];
 if ($subtaskRows !== $expectedSubtasks) {
     fwrite(STDERR, "Unexpected subtask contents: " . json_encode($subtaskRows) . "\n");

@@ -32,3 +32,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Added comment reference checks in fixture + round-trip verification scripts. Verification: make ci-docker (docker permission denied); sudo make ci-docker (ok).
 2026-01-19: Verified fixture task is_active flags in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
 2026-01-19: Added fixture task priority values + verification in fixture and round-trip scripts. Verification: `sudo make ci-docker` (ok).
+2026-01-19: Added fixture + round-trip checks for subtask positions. Verification: `sudo make ci-docker` (ok).
