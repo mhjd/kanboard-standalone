@@ -106,6 +106,27 @@ if ($projectRows !== $expectedProjects) {
     fail("Unexpected project metadata: " . json_encode($projectRows));
 }
 
+$projectId = (int) $pdo->query("SELECT id FROM projects ORDER BY id ASC")->fetchColumn();
+if ($projectId <= 0) {
+    fail("Unexpected project id: {$projectId}");
+}
+
+$projectMappings = [
+    'columns' => $pdo->query("SELECT DISTINCT project_id FROM columns ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
+    'tasks' => $pdo->query("SELECT DISTINCT project_id FROM tasks ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
+    'swimlanes' => $pdo->query("SELECT DISTINCT project_id FROM swimlanes ORDER BY project_id ASC")->fetchAll(PDO::FETCH_COLUMN),
+];
+
+foreach ($projectMappings as $table => $projectIds) {
+    $projectIds = array_map(static function ($value): int {
+        return (int) $value;
+    }, $projectIds);
+
+    if ($projectIds !== [$projectId]) {
+        fail("Unexpected {$table} project mapping: " . json_encode($projectIds));
+    }
+}
+
 $swimlaneRows = $pdo->query("SELECT name, position, is_active FROM swimlanes ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
 $expectedSwimlanes = [
     ['name' => 'Default swimlane', 'position' => 1, 'is_active' => 1],
