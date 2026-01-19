@@ -298,6 +298,25 @@ if ($columnPositions !== $expectedColumns) {
     fail("Unexpected columns ordering: " . json_encode($columnPositions));
 }
 
+$columnMetadata = $pdo->query(
+    "SELECT title, task_limit, hide_in_dashboard
+     FROM columns
+     ORDER BY position ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$columnMetadata = array_map(static function (array $row): array {
+    $row['task_limit'] = (int) $row['task_limit'];
+    $row['hide_in_dashboard'] = (int) $row['hide_in_dashboard'];
+    return $row;
+}, $columnMetadata);
+$expectedColumnMetadata = [
+    ['title' => 'Backlog', 'task_limit' => 0, 'hide_in_dashboard' => 0],
+    ['title' => 'In Progress', 'task_limit' => 0, 'hide_in_dashboard' => 0],
+    ['title' => 'Done', 'task_limit' => 0, 'hide_in_dashboard' => 0],
+];
+if ($columnMetadata !== $expectedColumnMetadata) {
+    fail("Unexpected column metadata: " . json_encode($columnMetadata));
+}
+
 $taskColumns = $pdo->query(
     "SELECT tasks.title AS task_title, columns.title AS column_title
      FROM tasks

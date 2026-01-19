@@ -27,3 +27,4 @@ Round-trip verification passed. (ok).
 2026-01-19: Verified fixture project_id mapping for columns/tasks/swimlanes in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture task/comment user ownership mapping in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
 2026-01-19: Added fixture + round-trip checks for project_has_users membership mapping. Verification: `sudo make ci-docker` (ok).
+2026-01-19: Verified fixture column metadata (task_limit, hide_in_dashboard) in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
