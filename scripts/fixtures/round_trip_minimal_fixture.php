@@ -9,6 +9,8 @@ $root = dirname(__DIR__, 2);
 $fixturePath = $root . '/tests/fixtures/kanboard-minimal.db';
 $fixtureTimestamp = 1704067200; // 2024-01-01T00:00:00Z
 
+require_once $root . '/app/Schema/Sqlite.php';
+
 function tableColumns(PDO $pdo, string $table): array
 {
     $stmt = $pdo->query("PRAGMA table_info('" . $table . "')");
@@ -79,6 +81,15 @@ if (! $configModel->uploadDatabase($gzPath)) {
 $pdo = new PDO('sqlite:' . $sourceDb, null, null, [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 ]);
+
+$schemaColumns = tableColumns($pdo, 'schema_version');
+if ($schemaColumns !== []) {
+    $schemaVersion = (int) $pdo->query('SELECT version FROM schema_version')->fetchColumn();
+    $expectedSchemaVersion = (int) \Schema\VERSION;
+    if ($schemaVersion !== $expectedSchemaVersion) {
+        fail("Unexpected schema version: expected {$expectedSchemaVersion}, found {$schemaVersion}.");
+    }
+}
 
 $checks = [
     'projects' => 1,

@@ -36,3 +36,8 @@ Round-trip verification passed. (ok).
 2026-01-19: Added fixture task reference values in create/verify/round-trip scripts. Verification: `make fixtures` failed (docker permission denied); `sudo make fixtures` (ok).
 2026-01-19: Added fixture task due date values and checks in fixture + round-trip scripts. Verification: `make ci-docker` failed (docker permission denied); `sudo make ci-docker` (ok).
 2026-01-19: Verified fixture task external_provider/external_uri fields in fixture + round-trip scripts. Verification: `sudo make ci-docker` (ok).
+2026-01-19: Added conditional schema_version checks in fixture + round-trip verification scripts. Verification: Fixture database created at /app/tests/fixtures/kanboard-minimal.db
+Fixture verification passed.
+Round-trip verification passed. (failed: no schema_version table); Fixture database created at /app/tests/fixtures/kanboard-minimal.db
+Fixture verification passed.
+Round-trip verification passed. (ok).

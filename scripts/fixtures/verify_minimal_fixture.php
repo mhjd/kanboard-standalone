@@ -16,6 +16,8 @@ $pdo = new PDO('sqlite:' . $fixturePath, null, null, [
 
 $fixtureTimestamp = 1704067200; // 2024-01-01T00:00:00Z
 
+require_once $root . '/app/Schema/Sqlite.php';
+
 function tableColumns(PDO $pdo, string $table): array
 {
     $stmt = $pdo->query("PRAGMA table_info('" . $table . "')");
@@ -35,6 +37,19 @@ $integrityRows = $pdo->query('PRAGMA integrity_check')->fetchAll(PDO::FETCH_COLU
 if ($integrityRows !== ['ok']) {
     fwrite(STDERR, "SQLite integrity_check failed: " . json_encode($integrityRows) . "\n");
     exit(1);
+}
+
+$schemaColumns = tableColumns($pdo, 'schema_version');
+if ($schemaColumns !== []) {
+    $schemaVersion = (int) $pdo->query('SELECT version FROM schema_version')->fetchColumn();
+    $expectedSchemaVersion = (int) \Schema\VERSION;
+    if ($schemaVersion !== $expectedSchemaVersion) {
+        fwrite(
+            STDERR,
+            "Unexpected schema version: expected {$expectedSchemaVersion}, found {$schemaVersion}.\n"
+        );
+        exit(1);
+    }
 }
 
 $checks = [
