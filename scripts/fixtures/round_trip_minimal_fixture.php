@@ -80,6 +80,33 @@ foreach ($checks as $table => $expected) {
     }
 }
 
+$swimlaneRows = $pdo->query("SELECT name, position, is_active FROM swimlanes ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$expectedSwimlanes = [
+    ['name' => 'Default swimlane', 'position' => 1, 'is_active' => 1],
+];
+$swimlaneRows = array_map(static function (array $row): array {
+    $row['position'] = (int) $row['position'];
+    $row['is_active'] = (int) $row['is_active'];
+    return $row;
+}, $swimlaneRows);
+if ($swimlaneRows !== $expectedSwimlanes) {
+    fail("Unexpected swimlane rows: " . json_encode($swimlaneRows));
+}
+
+$taskSwimlanes = $pdo->query(
+    "SELECT tasks.title AS task_title, swimlanes.name AS swimlane_name
+     FROM tasks
+     JOIN swimlanes ON swimlanes.id = tasks.swimlane_id
+     ORDER BY tasks.id ASC"
+)->fetchAll(PDO::FETCH_ASSOC);
+$expectedTaskSwimlanes = [
+    ['task_title' => 'Fixture Task A', 'swimlane_name' => 'Default swimlane'],
+    ['task_title' => 'Fixture Task B', 'swimlane_name' => 'Default swimlane'],
+];
+if ($taskSwimlanes !== $expectedTaskSwimlanes) {
+    fail("Unexpected task swimlane mapping: " . json_encode($taskSwimlanes));
+}
+
 $colors = $pdo->query("SELECT color_id FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_COLUMN);
 if ($colors !== ['yellow', 'blue']) {
     fail("Unexpected task colors: " . json_encode($colors));
