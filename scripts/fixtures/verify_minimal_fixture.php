@@ -72,6 +72,16 @@ if ($colors !== ['yellow', 'blue']) {
     exit(1);
 }
 
+$taskDescriptions = $pdo->query("SELECT title, description FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$expectedTaskDescriptions = [
+    ['title' => 'Fixture Task A', 'description' => 'First fixture task.'],
+    ['title' => 'Fixture Task B', 'description' => 'Second fixture task.'],
+];
+if ($taskDescriptions !== $expectedTaskDescriptions) {
+    fwrite(STDERR, "Unexpected task descriptions: " . json_encode($taskDescriptions) . "\n");
+    exit(1);
+}
+
 $columnPositions = $pdo->query("SELECT title, position FROM columns ORDER BY position ASC")->fetchAll(PDO::FETCH_KEY_PAIR);
 $expectedColumns = [
     'Backlog' => 1,
