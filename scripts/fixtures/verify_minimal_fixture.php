@@ -70,8 +70,13 @@ foreach ($checks as $table => $expected) {
     }
 }
 
+$projectColumns = tableColumns($pdo, 'projects');
+$projectFields = ['name', 'description', 'identifier', 'is_active', 'is_private', 'is_public'];
+if (isset($projectColumns['token'])) {
+    $projectFields[] = 'token';
+}
 $projectRows = $pdo->query(
-    "SELECT name, description, identifier, is_active, is_private, is_public
+    "SELECT " . implode(', ', $projectFields) . "
      FROM projects
      ORDER BY id ASC"
 )->fetchAll(PDO::FETCH_ASSOC);
@@ -91,6 +96,9 @@ $expectedProjects = [
         'is_public' => 0,
     ],
 ];
+if (isset($projectColumns['token'])) {
+    $expectedProjects[0]['token'] = 'fixture-project-token';
+}
 if ($projectRows !== $expectedProjects) {
     fwrite(STDERR, "Unexpected project metadata: " . json_encode($projectRows) . "\n");
     exit(1);

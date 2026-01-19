@@ -132,7 +132,8 @@ if ($userId <= 0) {
     exit(1);
 }
 
-$projectId = insertRow($pdo, 'projects', [
+$projectInfo = tableInfo($pdo, 'projects');
+$projectRow = [
     'name' => 'Fixture Project',
     'description' => 'Minimal Kanboard fixture project for tests.',
     'identifier' => 'FIXTURE',
@@ -141,7 +142,12 @@ $projectId = insertRow($pdo, 'projects', [
     'is_public' => 0,
     'owner_id' => $userId,
     'last_modified' => $fixtureTimestamp,
-]);
+];
+if (isset($projectInfo['token'])) {
+    $projectRow['token'] = 'fixture-project-token';
+}
+
+$projectId = insertRow($pdo, 'projects', $projectRow);
 
 $projectHasUsersInfo = tableInfo($pdo, 'project_has_users');
 if ($projectHasUsersInfo !== []) {
