@@ -272,6 +272,23 @@ if ($taskActiveFlags !== $expectedTaskActiveFlags) {
     exit(1);
 }
 
+$taskTableColumns = tableColumns($pdo, 'tasks');
+if (isset($taskTableColumns['priority'])) {
+    $taskPriorities = $pdo->query("SELECT title, priority FROM tasks ORDER BY id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $taskPriorities = array_map(static function (array $row): array {
+        $row['priority'] = (int) $row['priority'];
+        return $row;
+    }, $taskPriorities);
+    $expectedTaskPriorities = [
+        ['title' => 'Fixture Task A', 'priority' => 2],
+        ['title' => 'Fixture Task B', 'priority' => 1],
+    ];
+    if ($taskPriorities !== $expectedTaskPriorities) {
+        fwrite(STDERR, "Unexpected task priorities: " . json_encode($taskPriorities) . "\n");
+        exit(1);
+    }
+}
+
 $taskTimestamps = $pdo->query(
     "SELECT title, date_creation, date_modification, date_moved
      FROM tasks

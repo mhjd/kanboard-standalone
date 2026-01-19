@@ -22,3 +22,4 @@
 20. [x] Verify fixture project owner and last_modified metadata in fixture and round-trip scripts.
 21. [x] Verify fixture comment reference values in fixture and round-trip scripts.
 22. [x] Verify fixture task is_active flags in fixture and round-trip scripts.
+23. [x] Verify fixture task priority values in fixture and round-trip scripts.
